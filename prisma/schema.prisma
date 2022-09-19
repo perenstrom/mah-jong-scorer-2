@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String  @id
+  name          String
+  gameAsPlayer1 Game[]  @relation("player1User")
+  gameAsPlayer2 Game[]  @relation("player2User")
+  gameAsPlayer3 Game[]  @relation("player3User")
+  gameAsPlayer4 Game[]  @relation("player4User")
+  groups        Group[]
+
+  @@map("users")
+}
+
+model Group {
+  id    Int    @id @default(autoincrement())
+  users User[]
+  Game  Game[]
+
+  @@map("groups")
+}
+
+model Game {
+  id            String        @id
+  groupId       Int
+  group         Group         @relation(fields: [groupId], references: [id])
+  player1       String        @map("player_1")
+  player1UserId String        @map("player_1_user_id")
+  player1User   User          @relation("player1User", fields: [player1UserId], references: [id])
+  player2       String        @map("player_2")
+  player2UserId String        @map("player_2_user_id")
+  player2User   User          @relation("player2User", fields: [player2UserId], references: [id])
+  player3       String        @map("player_3")
+  player3UserId String        @map("player_3_user_id")
+  player3User   User          @relation("player3User", fields: [player3UserId], references: [id])
+  player4       String        @map("player_4")
+  player4UserId String        @map("player_4_user_id")
+  player4User   User          @relation("player4User", fields: [player4UserId], references: [id])
+  resultPlayer1 Int           @map("result_player_1")
+  resultPlayer2 Int           @map("result_player_2")
+  resultPlayer3 Int           @map("result_player_3")
+  resultPlayer4 Int           @map("result_player_4")
+  created       DateTime
+  finished      DateTime
+  Transaction   Transaction[]
+
+  @@map("games")
+}
+
+model Transaction {
+  id            Int    @id @default(autoincrement())
+  gameId        String
+  game          Game   @relation(fields: [gameId], references: [id])
+  round         Int
+  pointsPlayer1 Int    @map("points_player_1")
+  pointsPlayer2 Int    @map("points_player_2")
+  pointsPlayer3 Int    @map("points_player_3")
+  pointsPlayer4 Int    @map("points_player_4")
+  mahJongPlayer Int    @map("mah_jong_player")
+  windPlayer    Int    @map("wind_player")
+
+  @@map("transactions")
+}

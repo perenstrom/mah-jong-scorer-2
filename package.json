@@ -3,20 +3,24 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3500",
+    "dev": "next dev -p 3501",
     "build": "next build",
     "start": "next start",
     "what": "ECHO Package system: npm",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "next lint"
+    "lint": "next lint",
+    "loadenv:local": "dotenv -e .env.local",
+    "prisma:migrate:dev": "npm run loadenv:local -- prisma migrate dev"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^1.9.1",
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.4",
     "@mui/lab": "^5.0.0-alpha.99",
     "@mui/material": "^5.10.5",
+    "@prisma/client": "^4.3.1",
     "next": "^12.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -27,11 +31,13 @@
     "@types/react": "^18.0.20",
     "@typescript-eslint/eslint-plugin": "^5.37.0",
     "@typescript-eslint/parser": "^5.37.0",
+    "dotenv-cli": "^6.0.0",
     "eslint": "^8.23.1",
     "eslint-config-next": "^12.3.0",
     "eslint-plugin-jest": "^27.0.4",
     "jest": "^29.0.3",
     "jest-environment-jsdom": "^29.0.3",
+    "prisma": "^4.3.1",
     "typescript": "^4.8.3"
   }
 }
