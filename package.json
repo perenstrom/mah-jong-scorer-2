@@ -11,7 +11,8 @@
     "test:watch": "jest --watch",
     "lint": "next lint",
     "loadenv:local": "dotenv -e .env.local",
-    "prisma:migrate:dev": "npm run loadenv:local -- prisma migrate dev"
+    "prisma:migrate:dev": "npm run loadenv:local -- prisma migrate dev",
+    "prisma:migrate:deploy": "npm run loadenv:local -- prisma migrate deploy"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^1.9.1",
