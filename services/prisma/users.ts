@@ -8,10 +8,10 @@ export const createUser = async (
   user: User,
   ctx: Context
 ): Promise<Nullable<User>> => {
-  const formattedFilm = prismaMap.user.toPrisma(user);
+  const formattedUser = prismaMap.user.toPrisma(user);
 
   const result = await ctx.prisma.user.create({
-    data: formattedFilm
+    data: formattedUser
   });
 
   if (result) {

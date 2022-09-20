@@ -35,8 +35,9 @@ const users = async (req: NextApiRequest, res: NextApiResponse) => {
             resolve('');
           })
           .catch((error) => {
-            res.status(500).end(error);
-            return resolve('');
+            console.log(error);
+            res.status(500).end('Unexpected internal server error');
+            resolve('');
           });
       }
     });
