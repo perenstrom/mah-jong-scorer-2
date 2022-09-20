@@ -11,13 +11,14 @@ datasource db {
 }
 
 model User {
-  id            String  @id
-  name          String
-  gameAsPlayer1 Game[]  @relation("player1User")
-  gameAsPlayer2 Game[]  @relation("player2User")
-  gameAsPlayer3 Game[]  @relation("player3User")
-  gameAsPlayer4 Game[]  @relation("player4User")
-  groups        Group[]
+  id             String  @id
+  name           String
+  gamesAsPlayer1 Game[]  @relation("player1User")
+  gamesAsPlayer2 Game[]  @relation("player2User")
+  gamesAsPlayer3 Game[]  @relation("player3User")
+  gamesAsPlayer4 Game[]  @relation("player4User")
+  groups         Group[]
+  gamesAsOwner   Game[]  @relation("owner")
 
   @@map("users")
 }
@@ -34,6 +35,8 @@ model Game {
   id            String        @id
   groupId       Int
   group         Group         @relation(fields: [groupId], references: [id])
+  ownerUserId   String        @map("owner_user_id")
+  owner         User          @relation("owner", fields: [ownerUserId], references: [id])
   player1       String        @map("player_1")
   player1UserId String        @map("player_1_user_id")
   player1User   User          @relation("player1User", fields: [player1UserId], references: [id])
