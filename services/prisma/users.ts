@@ -20,3 +20,20 @@ export const createUser = async (
     return null;
   }
 };
+
+export const getUser = async (
+  userId: string,
+  ctx: Context
+): Promise<Nullable<User>> => {
+  const betResult = await ctx.prisma.user.findUnique({
+    where: {
+      id: userId
+    }
+  });
+
+  if (!betResult) {
+    return null;
+  } else {
+    return prismaMap.user.fromPrisma(betResult);
+  }
+};
