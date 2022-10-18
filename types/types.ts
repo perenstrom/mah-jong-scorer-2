@@ -52,3 +52,4 @@ export interface Game {
     finished: Date | null;
   };
 }
+export type CreateGame = Omit<Game, 'transactions' | 'result' | 'meta'>;

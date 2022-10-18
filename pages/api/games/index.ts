@@ -1,38 +1,55 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { isAuthorized } from 'lib/authorization';
-import { Game } from 'types/types';
+// import { isAuthorized } from 'lib/authorization';
+import { createGame } from 'services/prisma/games';
+import { prismaContext } from 'lib/prisma';
+import { generateRandomId } from 'helpers/utils';
+import { formatPlayer } from 'helpers/playerHelper';
 
-type PostRequestQuery = Omit<Game, 'id'>;
+import type { CreateGame } from 'types/types';
+
+type PostRequestBody = Omit<CreateGame, 'id'>;
 
 const games = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     return new Promise((resolve) => {
-      const { ownerUserId } = req.query as unknown as PostRequestQuery;
+      const { groupId, ownerUserId, players }: PostRequestBody = req.body;
 
-      if (!isAuthorized(req, res, ownerUserId)) {
+      /* if (!isAuthorized(req, res, ownerUserId)) {
         res.status(401).end('Unauthorized.');
+        resolve('');
+      } */
+
+      // TODO: Add zod to validate post body instead of following:
+      if (!groupId || !ownerUserId || !players) {
+        res.status(400).end('Game data malformed');
         resolve('');
       }
 
-      // TODO: Implement ZOD
-      // TODO: Create game through service
-      
-
-      /*       if (!userId) {
-        res.status(400).end('Both userId and name must be provided');
+      try {
+        formatPlayer(players?.player1?.userId, players?.player1?.nonUser);
+        formatPlayer(players?.player2?.userId, players?.player2?.nonUser);
+        formatPlayer(players?.player3?.userId, players?.player3?.nonUser);
+        formatPlayer(players?.player4?.userId, players?.player4?.nonUser);
+      } catch (error) {
+        res.status(400).end('Game data malformed2');
         resolve('');
-      } else {
-        getUser(userId, prismaContext)
-          .then((user) => {
-            res.status(200).json(user);
-            resolve('');
-          })
-          .catch((error) => {
-            console.log(error);
-            res.status(500).end('Unexpected internal server error');
-            resolve('');
-          });
-      } */
+      }
+
+      const randomId = generateRandomId();
+
+      createGame(
+        { ...(req.body as unknown as PostRequestBody), id: randomId },
+        prismaContext
+      )
+        .then((game) => {
+          res.status(200).json(game);
+          resolve('');
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(500).end('Unexpected internal server error');
+          resolve('');
+        });
     });
   } else {
     res.status(404).end();

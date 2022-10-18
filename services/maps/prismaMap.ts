@@ -1,6 +1,19 @@
 import { Game as PrismaGame, Prisma, User as PrismaUser } from '@prisma/client';
 import { formatPlayer } from 'helpers/playerHelper';
-import { Game, User } from 'types/types';
+import { CreateGame, Game, User } from 'types/types';
+import { Nullable } from 'types/utilityTypes';
+
+const formatUserPlayer = (userId: Nullable<string>, key: string) => {
+  if (userId) {
+    return {
+      [key]: {
+        connect: { id: userId }
+      }
+    };
+  } else {
+    return {};
+  }
+};
 
 export const prismaMap = {
   user: {
@@ -36,7 +49,7 @@ export const prismaMap = {
       },
       transactions: [] // TODO: Fetch transactions at the same time?
     }),
-    toPrisma: (game: Game): Prisma.GameCreateInput => ({
+    toPrisma: (game: CreateGame): Prisma.GameCreateInput => ({
       id: game.id,
       created: new Date(),
       owner: {
@@ -46,25 +59,13 @@ export const prismaMap = {
         connect: { id: game.groupId }
       },
       player1: game.players.player1.nonUser || '',
-      ...(game.players.player1.userId
-        ? {
-            player1User: {
-              connect: { id: game.players.player1.userId }
-            }
-          }
-        : {}),
+      ...formatUserPlayer(game.players.player1.userId, 'player1User'),
       player2: game.players.player2.nonUser || '',
-      player2User: {
-        connect: { id: game.players.player2.userId }
-      },
+      ...formatUserPlayer(game.players.player2.userId, 'player2User'),
       player3: game.players.player3.nonUser || '',
-      player3User: {
-        connect: { id: game.players.player3.userId }
-      },
+      ...formatUserPlayer(game.players.player3.userId, 'player3User'),
       player4: game.players.player4.nonUser || '',
-      player4User: {
-        connect: { id: game.players.player4.userId }
-      }
+      ...formatUserPlayer(game.players.player4.userId, 'player4User'),
     })
   }
 };

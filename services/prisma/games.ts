@@ -1,11 +1,11 @@
 import { prismaMap } from 'services/maps/prismaMap';
 import type { Nullable } from 'types/utilityTypes';
 
-import type { Game } from 'types/types';
+import type { CreateGame, Game } from 'types/types';
 import type { Context } from './prisma.types';
 
 export const createGame = async (
-  game: Game,
+  game: CreateGame,
   ctx: Context
 ): Promise<Nullable<Game>> => {
   const formattedGame = prismaMap.game.toPrisma(game);
