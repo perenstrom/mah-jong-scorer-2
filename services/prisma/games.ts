@@ -1,8 +1,9 @@
 import { prismaMap } from 'services/maps/prismaMap';
 import type { Nullable } from 'types/utilityTypes';
 
-import type { CreateGame, Game } from 'types/types';
+import type { Game } from 'types/types';
 import type { Context } from './prisma.types';
+import { CreateGame } from 'schemas/zodSchemas';
 
 export const createGame = async (
   game: CreateGame,
