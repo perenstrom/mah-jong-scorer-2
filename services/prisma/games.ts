@@ -3,13 +3,14 @@ import type { Nullable } from 'types/utilityTypes';
 
 import type { Game } from 'types/types';
 import type { Context } from './prisma.types';
-import { CreateGame } from 'schemas/zodSchemas';
+import { CreateGamePrisma } from 'schemas/zodSchemas';
 
 export const createGame = async (
-  game: CreateGame,
+  game: CreateGamePrisma,
   ctx: Context
 ): Promise<Nullable<Game>> => {
   const formattedGame = prismaMap.game.toPrisma(game);
+  console.log(JSON.stringify(formattedGame, null, 2));
 
   const result = await ctx.prisma.game.create({
     data: formattedGame

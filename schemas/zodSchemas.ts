@@ -18,4 +18,7 @@ export const createGamePostSchema = z.object({
   })
 });
 
-export type CreateGame = z.infer<typeof createGamePostSchema> & { id: string };
+export type CreateGame = z.infer<typeof createGamePostSchema>;
+export type CreateGamePrisma = z.infer<typeof createGamePostSchema> & {
+  id: string;
+};

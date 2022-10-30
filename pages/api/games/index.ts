@@ -5,8 +5,6 @@ import { prismaContext } from 'lib/prisma';
 import { generateRandomId } from 'helpers/utils';
 import { createGamePostSchema } from 'schemas/zodSchemas';
 
-
-
 const games = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     return new Promise((resolve) => {

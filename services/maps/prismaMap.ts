@@ -1,6 +1,7 @@
 import { Game as PrismaGame, Prisma, User as PrismaUser } from '@prisma/client';
 import { formatPlayer } from 'helpers/playerHelper';
-import { CreateGame, Game, User } from 'types/types';
+import { CreateGamePrisma } from 'schemas/zodSchemas';
+import { Game, User } from 'types/types';
 import { Nullable } from 'types/utilityTypes';
 
 const formatUserPlayer = (userId: Nullable<string>, key: string) => {
@@ -49,7 +50,7 @@ export const prismaMap = {
       },
       transactions: [] // TODO: Fetch transactions at the same time?
     }),
-    toPrisma: (game: CreateGame): Prisma.GameCreateInput => ({
+    toPrisma: (game: CreateGamePrisma): Prisma.GameCreateInput => ({
       id: game.id,
       created: new Date(),
       owner: {
@@ -65,7 +66,7 @@ export const prismaMap = {
       player3: game.players.player3.nonUser || '',
       ...formatUserPlayer(game.players.player3.userId, 'player3User'),
       player4: game.players.player4.nonUser || '',
-      ...formatUserPlayer(game.players.player4.userId, 'player4User'),
+      ...formatUserPlayer(game.players.player4.userId, 'player4User')
     })
   }
 };
