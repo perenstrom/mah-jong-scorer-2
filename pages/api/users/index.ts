@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prismaContext } from 'lib/prisma';
-import { createUser } from 'services/prisma/users';
+import { createUser, getUsers } from 'services/prisma/users';
 
 interface PostRequestBody {
   userId: string;
@@ -40,6 +40,19 @@ const users = async (req: NextApiRequest, res: NextApiResponse) => {
             resolve('');
           });
       }
+    });
+  } else if (req.method === 'GET') {
+    return new Promise((resolve) => {
+      getUsers(prismaContext)
+        .then((users) => {
+          res.status(200).json(users);
+          resolve('');
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(500).end('Unexpected internal server error');
+          resolve('');
+        });
     });
   } else {
     res.status(404).end();

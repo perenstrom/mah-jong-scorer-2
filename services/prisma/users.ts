@@ -21,19 +21,31 @@ export const createUser = async (
   }
 };
 
+export const getUsers = async (ctx: Context) => {
+  const usersResult = await ctx.prisma.user.findMany({});
+
+  if (!usersResult) {
+    return null;
+  } else {
+    return usersResult.map((userResult) =>
+      prismaMap.user.fromPrisma(userResult)
+    );
+  }
+};
+
 export const getUser = async (
   userId: string,
   ctx: Context
 ): Promise<Nullable<User>> => {
-  const betResult = await ctx.prisma.user.findUnique({
+  const userResult = await ctx.prisma.user.findUnique({
     where: {
       id: userId
     }
   });
 
-  if (!betResult) {
+  if (!userResult) {
     return null;
   } else {
-    return prismaMap.user.fromPrisma(betResult);
+    return prismaMap.user.fromPrisma(userResult);
   }
 };
