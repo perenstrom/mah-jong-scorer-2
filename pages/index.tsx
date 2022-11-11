@@ -4,33 +4,28 @@ import {
   withPageAuthRequired,
   WithPageAuthRequiredProps
 } from '@auth0/nextjs-auth0';
-import { Button, Select, Option, Grid } from '@mui/joy';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import { FormEventHandler, useState } from 'react';
+import { Button, Grid } from '@mui/joy';
+import React, { FormEventHandler, useRef, useState } from 'react';
 import { createGame } from 'services/local/games';
 import { User } from 'types/types';
 import { getUsers } from 'services/prisma/users';
 import { prismaContext } from 'lib/prisma';
 import { Container } from '@mui/system';
+import { Input, UserSelector } from 'components/UserSelector';
 
 interface Props {
   users: User[];
 }
 
 const IndexPage: NextPage<Props> = ({ users }) => {
-  const [input, setInput] = useState({
-    player1: '',
+  const [input, setInput] = useState<Input>({
     player1User: '',
-    player2: '',
     player2User: '',
-    player3: '',
     player3User: '',
-    player4: '',
     player4User: ''
   });
 
-  const handleChange = (key: keyof typeof input, value: string) => {
+  const handleChange = (key: keyof Input, value: string) => {
     const newObject = { ...input, [key]: value };
 
     setInput(newObject);
@@ -101,106 +96,50 @@ const IndexPage: NextPage<Props> = ({ users }) => {
       console.log('Error creating game');
     }
   };
+  const player1Action = useRef(null);
+  const player2Action = useRef(null);
+  const player3Action = useRef(null);
+  const player4Action = useRef(null);
 
   return (
     <Container maxWidth="md" sx={{ p: 2 }}>
       <form onSubmit={onSubmit}>
         <Grid container spacing={2}>
-          {/*             <TextField
-              sx={{ display: 'none' }}
-              label="Player 1 (non user)"
-              value={input.player1}
-              onChange={(event) => handleChange('player1', event.target.value)}
-            /> */}
-          <Grid md={3}>
-            <FormControl>
-              <FormLabel>Player 1 (user)</FormLabel>
-              <Select
-                placeholder="Choose player"
-                value={input.player1User}
-                onChange={(_, value) =>
-                  handleChange('player1User', value || '')
-                }
-              >
-                {availablePlayers.player1.map((user) => (
-                  <Option key={user.userId} value={user.userId}>
-                    {user.name}
-                  </Option>
-                ))}
-              </Select>
-            </FormControl>
+          <Grid md={3} xs={6}>
+            <UserSelector
+              playerNumber={1}
+              value={input.player1User}
+              action={player1Action}
+              availablePlayers={availablePlayers.player1}
+              handleChange={handleChange}
+            />
           </Grid>
-          <Grid md={3}>
-            {/*             <TextField
-              sx={{ display: 'none' }}
-              label="Player 2 (non user)"
-              value={input.player2}
-              onChange={(event) => handleChange('player2', event.target.value)}
-            /> */}
-            <FormControl>
-              <FormLabel>Player 2 (user)</FormLabel>
-              <Select
-                placeholder="Choose player"
-                value={input.player2User}
-                onChange={(_, value) =>
-                  handleChange('player2User', value || '')
-                }
-              >
-                {availablePlayers.player2.map((user) => (
-                  <Option key={user.userId} value={user.userId}>
-                    {user.name}
-                  </Option>
-                ))}
-              </Select>
-            </FormControl>
+          <Grid md={3} xs={6}>
+            <UserSelector
+              playerNumber={2}
+              value={input.player2User}
+              action={player2Action}
+              availablePlayers={availablePlayers.player2}
+              handleChange={handleChange}
+            />
           </Grid>
-          <Grid md={3}>
-            {/*             <TextField
-              sx={{ display: 'none' }}
-              label="Player 3 (non user)"
-              value={input.player3}
-              onChange={(event) => handleChange('player3', event.target.value)}
-            /> */}
-            <FormControl>
-              <FormLabel>Player 3 (user)</FormLabel>
-              <Select
-                placeholder="Choose player"
-                value={input.player3User}
-                onChange={(_, value) =>
-                  handleChange('player3User', value || '')
-                }
-              >
-                {availablePlayers.player3.map((user) => (
-                  <Option key={user.userId} value={user.userId}>
-                    {user.name}
-                  </Option>
-                ))}
-              </Select>
-            </FormControl>
+          <Grid md={3} xs={6}>
+            <UserSelector
+              playerNumber={3}
+              value={input.player3User}
+              action={player3Action}
+              availablePlayers={availablePlayers.player3}
+              handleChange={handleChange}
+            />
           </Grid>
-          <Grid md={3}>
-            {/*             <TextField
-              sx={{ display: 'none' }}
-              label="Player 4 (non user)"
-              value={input.player4}
-              onChange={(event) => handleChange('player4', event.target.value)}
-            /> */}
-            <FormControl>
-              <FormLabel>Player 4 (user)</FormLabel>
-              <Select
-                placeholder="Choose player"
-                value={input.player4User}
-                onChange={(_, value) =>
-                  handleChange('player4User', value || '')
-                }
-              >
-                {availablePlayers.player4.map((user) => (
-                  <Option key={user.userId} value={user.userId}>
-                    {user.name}
-                  </Option>
-                ))}
-              </Select>
-            </FormControl>
+          <Grid md={3} xs={6}>
+            <UserSelector
+              playerNumber={4}
+              value={input.player4User}
+              action={player4Action}
+              availablePlayers={availablePlayers.player4}
+              handleChange={handleChange}
+            />
           </Grid>
         </Grid>
         <Button type="submit" loading={loading} sx={{ mt: 2 }}>
