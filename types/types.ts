@@ -10,6 +10,14 @@ interface PlayerBase {
   userId: string;
 }
 export type Player = RequireExactlyOne<PlayerBase, 'nonUser' | 'userId'>;
+interface ExpandedPlayerBase {
+  nonUser: string;
+  user: User;
+}
+export type ExpandedPlayer = RequireExactlyOne<
+  ExpandedPlayerBase,
+  'nonUser' | 'user'
+>;
 
 interface TransactionResult {
   points: number;
@@ -48,7 +56,13 @@ export interface Game {
   };
   transactions: number[];
   meta: {
-    created: Date;
-    finished: Date | null;
+    created: number;
+    finished: number | null;
   };
 }
+
+export type ExpandedGame = Omit<Game, 'players'> & {
+  players: {
+    [Property in keyof Game['players']]: ExpandedPlayer;
+  };
+};

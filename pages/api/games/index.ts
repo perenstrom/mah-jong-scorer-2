@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { isAuthorized } from 'lib/authorization';
+import { isAuthorized } from 'lib/authorization';
 import { createGame } from 'services/prisma/games';
 import { prismaContext } from 'lib/prisma';
 import { generateRandomId } from 'helpers/utils';
@@ -8,19 +8,19 @@ import { createGamePostSchema } from 'schemas/zodSchemas';
 const games = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     return new Promise((resolve) => {
-      // const {  ownerUserId }: PostRequestBody = req.body;
-
-      /* if (!isAuthorized(req, res, ownerUserId)) {
-        res.status(401).end('Unauthorized.');
-        resolve('');
-      } */
-
       const gameParse = createGamePostSchema.safeParse(req.body);
       if (!gameParse.success) {
         console.log(JSON.stringify(gameParse.error, null, 2));
         res.status(400).end('Game data malformed');
         resolve('');
       } else {
+        const { ownerUserId } = gameParse.data;
+
+        if (!isAuthorized(req, res, ownerUserId)) {
+          res.status(401).end('Unauthorized.');
+          resolve('');
+        }
+
         const randomId = generateRandomId();
 
         createGame({ ...gameParse.data, id: randomId }, prismaContext)
