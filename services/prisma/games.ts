@@ -41,3 +41,26 @@ export const getExpandedGames = async (
     return [];
   }
 };
+
+export const getExpandedGame = async (
+  ctx: Context,
+  gameId: string
+): Promise<Nullable<ExpandedGame>> => {
+  const result = await ctx.prisma.game.findUnique({
+    where: {
+      id: gameId
+    },
+    include: {
+      player1User: true,
+      player2User: true,
+      player3User: true,
+      player4User: true
+    }
+  });
+
+  if (result) {
+    return prismaMap.expandedGame.fromPrisma(result);
+  } else {
+    return null;
+  }
+};

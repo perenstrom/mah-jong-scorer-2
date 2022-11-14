@@ -6,6 +6,7 @@ import {
   Stack,
   Typography
 } from '@mui/joy';
+import Link from 'next/link';
 import { ExpandedGame, ExpandedPlayer } from 'types/types';
 
 interface Props {
@@ -33,7 +34,7 @@ export const GamesList: React.FC<Props> = ({ games }) => {
       const winnerPlayerNumber = [
         { playerNumber: 1, result: results.player1 },
         { playerNumber: 2, result: results.player2 },
-        { playerNumber: 3, result: results.player1 },
+        { playerNumber: 3, result: results.player3 },
         { playerNumber: 4, result: results.player4 }
       ].sort((a, b) => (b.result || 0) - (a.result || 0))[0].playerNumber;
 
@@ -51,9 +52,11 @@ export const GamesList: React.FC<Props> = ({ games }) => {
       {games.map((game) => (
         <Card row variant="outlined" key={game.id} sx={{ mb: 1 }}>
           <CardContent>
-            <Typography level="h5" component="h3" mb={1}>
-              {new Date(game.meta.created).toLocaleDateString()}
-            </Typography>
+            <Link href={`/games/${encodeURIComponent(game.id)}`}>
+              <Typography level="h5" component="h3" mb={1}>
+                {new Date(game.meta.created).toLocaleDateString()}
+              </Typography>
+            </Link>
             <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
               <Chip
                 size="sm"
