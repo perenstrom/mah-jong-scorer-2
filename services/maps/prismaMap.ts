@@ -1,9 +1,18 @@
-import type { Game as PrismaGame, Prisma, User as PrismaUser } from '@prisma/client';
+import type {
+  Game as PrismaGame,
+  Prisma,
+  Transaction as PrismaTransaction,
+  User as PrismaUser
+} from '@prisma/client';
 import type { ExpandedGame as PrismaExpandedGame } from 'services/prisma/prisma.types';
 import { formatExpandedPlayer, formatPlayer } from 'helpers/playerHelper';
 import type { CreateGamePrisma } from 'schemas/zodSchemas';
-import type { ExpandedGame, Game, User } from 'types/types';
+import type { ExpandedGame, Game, Transaction, User } from 'types/types';
 import type { Nullable } from 'types/utilityTypes';
+import {
+  calculateTransaction,
+  PrismaTransactionToTransactionData
+} from 'helpers/transactionHelper';
 
 const formatUserPlayer = (userId: Nullable<string>, key: string) => {
   if (userId) {
@@ -31,8 +40,7 @@ const baseGame = {
       player2: gameResponse.resultPlayer2,
       player3: gameResponse.resultPlayer3,
       player4: gameResponse.resultPlayer4
-    },
-    transactions: [] // TODO: Fetch transactions at the same time?
+    }
   })
 };
 
@@ -97,6 +105,17 @@ export const prismaMap = {
           gameResponse.player4
         )
       }
+    })
+  },
+  transaction: {
+    fromPrisma: (transactionResponse: PrismaTransaction): Transaction => ({
+      id: transactionResponse.id,
+      round: transactionResponse.round,
+      windPlayer: transactionResponse.windPlayer,
+      mahJongPlayer: transactionResponse.mahJongPlayer,
+      result: calculateTransaction(
+        PrismaTransactionToTransactionData(transactionResponse)
+      )
     })
   }
 };

@@ -19,10 +19,9 @@ export type ExpandedPlayer = RequireExactlyOne<
   'nonUser' | 'user'
 >;
 
-interface TransactionResult {
+export interface TransactionResult {
   points: number;
   change: number;
-  result: number;
   wind: boolean;
   mahJong: boolean;
 }
@@ -36,6 +35,8 @@ export interface Transaction {
     player3: TransactionResult;
     player4: TransactionResult;
   };
+  windPlayer: number;
+  mahJongPlayer: number;
 }
 
 export interface Game {
@@ -54,7 +55,6 @@ export interface Game {
     player3: number | null;
     player4: number | null;
   };
-  transactions: number[];
   meta: {
     created: number;
     finished: number | null;

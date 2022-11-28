@@ -8,7 +8,8 @@ import { GetServerSideProps, NextPage } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import React from 'react';
 import { getExpandedGame } from 'services/prisma/games';
-import { ExpandedGame } from 'types/types';
+import { getTransactions } from 'services/prisma/transactions';
+import { ExpandedGame, Transaction } from 'types/types';
 
 const LeaderBoardItem: React.FC<{ name: string; points: number }> = ({
   name,
@@ -35,8 +36,9 @@ const LeaderBoardItem: React.FC<{ name: string; points: number }> = ({
 
 interface Props {
   game: ExpandedGame;
+  transactions: Transaction[];
 }
-const GameDetailsPage: NextPage<Props> = ({ game }) => {
+const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
   const gameIsFinished = !!game.meta.finished;
   const leaderboard = gameIsFinished
     ? [
@@ -48,50 +50,55 @@ const GameDetailsPage: NextPage<Props> = ({ game }) => {
     : [];
 
   return (
-    <Stack direction="row">
-      <Stack
-        sx={{ backgroundColor: 'tomato', flexBasis: '20rem', m: 0, p: 0 }}
-        component="ul"
-      >
-        {leaderboard.map((leaderBoardItem) => (
-          <LeaderBoardItem
-            key={
-              leaderBoardItem.player.user?.name ||
-              leaderBoardItem.player.nonUser ||
-              ''
-            }
-            name={
-              leaderBoardItem.player.user?.name ||
-              leaderBoardItem.player.nonUser ||
-              ''
-            }
-            points={leaderBoardItem.result}
-          />
-        ))}
-      </Stack>
-      <Box
-        sx={{
-          backgroundColor: 'lime',
-          flexGrow: '1',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        chart
-      </Box>
-      <Stack sx={{ backgroundColor: 'peachpuff', flexBasis: '20rem' }}>
-        <Box sx={{ flexGrow: '1' }}>First player</Box>
-        <Box sx={{ flexGrow: '1' }}>Second player</Box>
-        <Box sx={{ flexGrow: '1' }}>Third player</Box>
-        <Box sx={{ flexGrow: '1' }}>Fourth player</Box>
-        <Box sx={{ flexGrow: '1' }}>
-          <Button variant="plain" sx={{ width: '100%' }}>
-            Save
-          </Button>
+    <>
+      <Stack direction="row">
+        <Stack
+          sx={{ backgroundColor: 'tomato', flexBasis: '20rem', m: 0, p: 0 }}
+          component="ul"
+        >
+          {leaderboard.map((leaderBoardItem) => (
+            <LeaderBoardItem
+              key={
+                leaderBoardItem.player.user?.name ||
+                leaderBoardItem.player.nonUser ||
+                ''
+              }
+              name={
+                leaderBoardItem.player.user?.name ||
+                leaderBoardItem.player.nonUser ||
+                ''
+              }
+              points={leaderBoardItem.result}
+            />
+          ))}
+        </Stack>
+        <Box
+          sx={{
+            backgroundColor: 'lime',
+            flexGrow: '1',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          chart
         </Box>
+        <Stack sx={{ backgroundColor: 'peachpuff', flexBasis: '20rem' }}>
+          <Box sx={{ flexGrow: '1' }}>First player</Box>
+          <Box sx={{ flexGrow: '1' }}>Second player</Box>
+          <Box sx={{ flexGrow: '1' }}>Third player</Box>
+          <Box sx={{ flexGrow: '1' }}>Fourth player</Box>
+          <Box sx={{ flexGrow: '1' }}>
+            <Button variant="plain" sx={{ width: '100%' }}>
+              Save
+            </Button>
+          </Box>
+        </Stack>
       </Stack>
-    </Stack>
+      <div>
+        <pre>{JSON.stringify(transactions, null, 2)}</pre>
+      </div>
+    </>
   );
 };
 
@@ -106,13 +113,17 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (
   }
 
   const game = await getExpandedGame(prismaContext, context.params.gameId);
+  const transactions = await getTransactions(
+    prismaContext,
+    context.params.gameId
+  );
 
-  if (!game) {
+  if (!game || !transactions) {
     throw new Error('Error when fetching games data');
   }
 
   return {
-    props: { game }
+    props: { game, transactions }
   };
 };
 
