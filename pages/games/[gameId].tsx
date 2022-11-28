@@ -3,6 +3,7 @@ import {
   WithPageAuthRequiredProps
 } from '@auth0/nextjs-auth0';
 import { Box, Button, Stack, Typography } from '@mui/joy';
+import { calculateStandings } from 'helpers/gameHelper';
 import { prismaContext } from 'lib/prisma';
 import { GetServerSideProps, NextPage } from 'next';
 import { ParsedUrlQuery } from 'querystring';
@@ -39,15 +40,12 @@ interface Props {
   transactions: Transaction[];
 }
 const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
-  const gameIsFinished = !!game.meta.finished;
-  const leaderboard = gameIsFinished
-    ? [
-        { player: game.players.player1, result: game.results.player1 || 0 },
-        { player: game.players.player2, result: game.results.player2 || 0 },
-        { player: game.players.player3, result: game.results.player3 || 0 },
-        { player: game.players.player4, result: game.results.player4 || 0 }
-      ].sort((a, b) => (b.result || 0) - (a.result || 0))
-    : [];
+  const leaderboard = [
+    { player: game.players.player1, result: game.results.player1 || 0 },
+    { player: game.players.player2, result: game.results.player2 || 0 },
+    { player: game.players.player3, result: game.results.player3 || 0 },
+    { player: game.players.player4, result: game.results.player4 || 0 }
+  ].sort((a, b) => (b.result || 0) - (a.result || 0));
 
   return (
     <>
@@ -112,14 +110,19 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (
     throw new Error('No game ID in params');
   }
 
-  const game = await getExpandedGame(prismaContext, context.params.gameId);
-  const transactions = await getTransactions(
-    prismaContext,
-    context.params.gameId
-  );
+  const [game, transactions] = await Promise.all([
+    getExpandedGame(prismaContext, context.params.gameId),
+    getTransactions(prismaContext, context.params.gameId)
+  ]);
 
   if (!game || !transactions) {
     throw new Error('Error when fetching games data');
+  }
+
+  if (!game.meta.finished) {
+    console.log('asfa');
+    console.log(JSON.stringify(calculateStandings(transactions), null, 2));
+    game.results = calculateStandings(transactions);
   }
 
   return {
