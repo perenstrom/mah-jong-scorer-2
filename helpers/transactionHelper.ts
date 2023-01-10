@@ -98,3 +98,52 @@ export const calculateTransaction = (
 
   return transactionResult;
 };
+
+export const calculateResults = (
+  transactions: Transaction[]
+): Transaction[] => {
+  let cumulativeResults = {
+    player1: 2000,
+    player2: 2000,
+    player3: 2000,
+    player4: 2000
+  };
+
+  const extendedTransactions: Transaction[] = [];
+
+  transactions.forEach((transaction) => {
+    const newResult = {
+      player1: cumulativeResults.player1 + transaction.result.player1.change,
+      player2: cumulativeResults.player2 + transaction.result.player2.change,
+      player3: cumulativeResults.player3 + transaction.result.player3.change,
+      player4: cumulativeResults.player4 + transaction.result.player4.change
+    };
+    cumulativeResults = { ...newResult };
+
+    const extendedTransaction: Transaction = {
+      ...transaction,
+      result: {
+        player1: {
+          ...transaction.result.player1,
+          result: newResult.player1
+        },
+        player2: {
+          ...transaction.result.player2,
+          result: newResult.player2
+        },
+        player3: {
+          ...transaction.result.player3,
+          result: newResult.player3
+        },
+        player4: {
+          ...transaction.result.player4,
+          result: newResult.player4
+        }
+      }
+    };
+
+    extendedTransactions.push(extendedTransaction);
+  });
+
+  return extendedTransactions;
+};

@@ -20,6 +20,7 @@ export type ExpandedPlayer = RequireExactlyOne<
 >;
 
 export interface TransactionResult {
+  result?: number;
   points: number;
   change: number;
   wind: boolean;
