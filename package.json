@@ -23,6 +23,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mui/base": "^5.0.0-alpha.113",
     "@mui/joy": "^5.0.0-alpha.49",
     "@prisma/client": "^4.3.1",
     "next": "^12.3.0",
