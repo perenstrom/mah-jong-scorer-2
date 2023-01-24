@@ -2,18 +2,23 @@ import {
   withPageAuthRequired,
   WithPageAuthRequiredProps
 } from '@auth0/nextjs-auth0';
-import { Box, Stack, styled, Typography } from '@mui/joy';
+import { Box, Stack, styled } from '@mui/joy';
+import { InputRow } from 'components/gameDetails/InputRow';
+import { LeaderBoardItem } from 'components/gameDetails/LeaderBoardItem';
 import { calculateStandings } from 'helpers/gameHelper';
 import { calculateResults } from 'helpers/transactionHelper';
 import { prismaContext } from 'lib/prisma';
 import { GetServerSideProps, NextPage } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import React from 'react';
+import React, { useState } from 'react';
 import { getExpandedGame } from 'services/prisma/games';
 import { getTransactions } from 'services/prisma/transactions';
-import { ExpandedGame, Transaction, TransactionResult } from 'types/types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCrown, faWind } from '@fortawesome/free-solid-svg-icons';
+import {
+  ExpandedGame,
+  PlayerNumber,
+  Transaction,
+  TransactionResult
+} from 'types/types';
 
 const TableBodyRow = styled('tr')`
   &:nth-child(odd) {
@@ -23,58 +28,6 @@ const TableBodyRow = styled('tr')`
 
 // TODO: FORTSÄTT STYLA LÄGG TILL POÄNG FÖR EN RUNDA
 
-const ScoreInput = styled('input')`
-  border: 0;
-  font-size: 2rem;
-  min-width: 0;
-  padding-left: 0.5rem;
-`;
-
-const ScoreAvatar: React.FC<{ initials: string; color: string }> = ({
-  initials,
-  color
-}) => (
-  <Box
-    sx={{
-      flex: '0 0 3rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: color
-    }}
-  >
-    {initials}
-  </Box>
-);
-
-const WindSelector: React.FC<{}> = () => (
-  <Box
-    sx={{
-      flex: '0 0 3rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderLeft: '1px solid #eee'
-    }}
-  >
-    <FontAwesomeIcon icon={faWind} />
-  </Box>
-);
-
-const WinnerSelector: React.FC<{}> = () => (
-  <Box
-    sx={{
-      flex: '0 0 3rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderLeft: '1px solid #eee'
-    }}
-  >
-    <FontAwesomeIcon icon={faCrown} />
-  </Box>
-);
-
 const SaveButton = styled('button')`
   width: 100%;
   height: 100%;
@@ -82,30 +35,6 @@ const SaveButton = styled('button')`
   border: 0;
   font-size: 1.2rem;
 `;
-
-const LeaderBoardItem: React.FC<{ name: string; points: number }> = ({
-  name,
-  points
-}) => (
-  <Stack
-    direction="row"
-    sx={{
-      flexGrow: '1',
-      justifyContent: 'space-between',
-      p: 1,
-      alignItems: 'baseline',
-      borderBottom: '1px solid #eee'
-    }}
-    component="li"
-  >
-    <Typography level="h4" component="p">
-      {name}
-    </Typography>
-    <Typography level="h3" component="p">
-      {points}
-    </Typography>
-  </Stack>
-);
 
 const ChangeCell: React.FC<{ transactionResult: TransactionResult }> = ({
   transactionResult
@@ -131,6 +60,40 @@ const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
     { player: game.players.player3, result: game.results.player3 || 0 },
     { player: game.players.player4, result: game.results.player4 || 0 }
   ].sort((a, b) => (b.result || 0) - (a.result || 0));
+
+  const [scoreInput, setScoreInput] = useState({
+    player1: '0',
+    player2: '0',
+    player3: '0',
+    player4: '0'
+  });
+  const updateScoreInput = (playerNumber: PlayerNumber) => (value: string) => {
+    setScoreInput({ ...scoreInput, [`player${playerNumber}`]: value });
+  };
+
+  const [windPlayer, setWindPlayer] = useState<PlayerNumber>(1);
+  const [winnerPlayer, setWinnerPlayer] = useState<PlayerNumber | null>(null);
+
+  const colors = {
+    1: '#F26419',
+    2: '#21C46D',
+    3: '#33658A',
+    4: '#F6AE2D'
+  };
+  const generateInputRow = (playerNumber: PlayerNumber) => (
+    <InputRow
+      initials={
+        game.players[`player${playerNumber}`].user?.name.substring(0, 1) || ''
+      }
+      color={colors[playerNumber]}
+      value={scoreInput[`player${playerNumber}`]}
+      onValueChange={updateScoreInput(playerNumber)}
+      windSelected={windPlayer === playerNumber}
+      winnerSelected={winnerPlayer === playerNumber}
+      selectWind={() => setWindPlayer(playerNumber)}
+      selectWinner={() => setWinnerPlayer(playerNumber)}
+    />
+  );
 
   return (
     <>
@@ -163,55 +126,11 @@ const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
         >
           Graph under construction
         </Box>
-        <Stack sx={{ flexBasis: '20rem', minWidth: '0' }}>
-          <Stack
-            sx={{ flex: '1', borderBottom: '1px solid #eee' }}
-            direction="row"
-          >
-            <ScoreAvatar
-              initials={game.players.player1.user?.name.substring(0, 1) || ''}
-              color="#F26419"
-            />
-            <ScoreInput value="0" />
-            <WindSelector />
-            <WinnerSelector />
-          </Stack>
-          <Stack
-            sx={{ flex: '1', borderBottom: '1px solid #eee' }}
-            direction="row"
-          >
-            <ScoreAvatar
-              initials={game.players.player2.user?.name.substring(0, 1) || ''}
-              color="#21C46D"
-            />
-            <ScoreInput value="0" />
-            <WindSelector />
-            <WinnerSelector />
-          </Stack>
-          <Stack
-            sx={{ flex: '1', borderBottom: '1px solid #eee' }}
-            direction="row"
-          >
-            <ScoreAvatar
-              initials={game.players.player3.user?.name.substring(0, 1) || ''}
-              color="#33658A"
-            />
-            <ScoreInput value="0" />
-            <WindSelector />
-            <WinnerSelector />
-          </Stack>
-          <Stack
-            sx={{ flex: '1', borderBottom: '1px solid #eee' }}
-            direction="row"
-          >
-            <ScoreAvatar
-              initials={game.players.player4.user?.name.substring(0, 1) || ''}
-              color="#F6AE2D"
-            />
-            <ScoreInput value="0" />
-            <WindSelector />
-            <WinnerSelector />
-          </Stack>
+        <Stack sx={{ flexBasis: '20rem', minWidth: '0' }} component="form">
+          {generateInputRow(1)}
+          {generateInputRow(2)}
+          {generateInputRow(3)}
+          {generateInputRow(4)}
           <Box sx={{ flex: '1' }}>
             <SaveButton>Save</SaveButton>
           </Box>

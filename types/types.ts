@@ -5,6 +5,7 @@ export interface User {
   name: string;
 }
 
+export type PlayerNumber = 1 | 2 | 3 | 4;
 interface PlayerBase {
   nonUser: string;
   userId: string;
