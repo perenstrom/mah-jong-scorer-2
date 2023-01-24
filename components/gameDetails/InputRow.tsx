@@ -10,20 +10,27 @@ const ScoreInput = styled('input')`
   border: 0;
   font-size: 2rem;
   min-width: 0;
-  padding-left: 0.5rem;
+  padding: 0 0.5rem;
+  text-align: end;
+
+  :focus-visible {
+    z-index: 1;
+  }
 `;
 
-const ScoreAvatar: React.FC<{ initials: string; color: string }> = ({
-  initials,
-  color
-}) => (
+const ScoreAvatar: React.FC<{
+  initials: string;
+  color: { background: string; text: string };
+}> = ({ initials, color }) => (
   <Box
     sx={{
       flex: '0 0 3rem',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: color
+      backgroundColor: color.background,
+      color: color.text,
+      fontSize: '1.5rem'
     }}
   >
     {initials}
@@ -45,7 +52,10 @@ const Selector: React.FC<{
       padding: 0,
       borderLeft: '1px solid #eee',
       backgroundColor: selected ? '#53a653' : 'white',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      ':focus-visible': {
+        zIndex: 1
+      }
     }}
     component="button"
     onClick={(event) => {
@@ -59,7 +69,7 @@ const Selector: React.FC<{
 
 export const InputRow: React.FC<{
   initials: string;
-  color: string;
+  color: { background: string; text: string };
   value: string;
   windSelected: boolean;
   winnerSelected: boolean;

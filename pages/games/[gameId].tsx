@@ -5,6 +5,7 @@ import {
 import { Box, Stack, styled } from '@mui/joy';
 import { InputRow } from 'components/gameDetails/InputRow';
 import { LeaderBoardItem } from 'components/gameDetails/LeaderBoardItem';
+import { SaveButton } from 'components/gameDetails/SaveButton';
 import { calculateStandings } from 'helpers/gameHelper';
 import { calculateResults } from 'helpers/transactionHelper';
 import { prismaContext } from 'lib/prisma';
@@ -24,16 +25,6 @@ const TableBodyRow = styled('tr')`
   &:nth-child(odd) {
     background-color: #f1f6ff;
   }
-`;
-
-// TODO: FORTSÄTT STYLA LÄGG TILL POÄNG FÖR EN RUNDA
-
-const SaveButton = styled('button')`
-  width: 100%;
-  height: 100%;
-  border-radius: 0;
-  border: 0;
-  font-size: 1.2rem;
 `;
 
 const ChangeCell: React.FC<{ transactionResult: TransactionResult }> = ({
@@ -75,10 +66,10 @@ const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
   const [winnerPlayer, setWinnerPlayer] = useState<PlayerNumber | null>(null);
 
   const colors = {
-    1: '#F26419',
-    2: '#21C46D',
-    3: '#33658A',
-    4: '#F6AE2D'
+    1: { background: '#F26419', text: 'black' },
+    2: { background: '#21C46D', text: 'black' },
+    3: { background: '#33658A', text: 'white' },
+    4: { background: '#F6AE2D', text: 'black' }
   };
   const generateInputRow = (playerNumber: PlayerNumber) => (
     <InputRow
