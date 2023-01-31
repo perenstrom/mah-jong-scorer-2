@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
 import { prismaMap } from 'services/maps/prismaMap';
-import type { ExpandedPlayer, Player } from 'types/types';
+import type { ExpandedPlayer, Player, PlayerNumber } from 'types/types';
 import type { Nullable } from 'types/utilityTypes';
 
 export const formatPlayer = (
@@ -48,5 +48,36 @@ export const formatExpandedPlayer = (
 
   return {
     nonUser: ''
+  };
+};
+
+type PlayersInitialsInput = Record<`player${PlayerNumber}`, string>;
+type PlayersInitials = PlayersInitialsInput;
+export const generatePlayerInitials = (
+  players: PlayersInitialsInput
+): PlayersInitials => {
+  const initials: string[] = [];
+
+  const playerNumbers = [1, 2, 3, 4] as const;
+
+  playerNumbers.forEach((playerNumber) => {
+    const playerName = players[`player${playerNumber}`];
+
+    let suggestedInitial = playerName.substring(0, 2);
+    let length = 2;
+
+    while (initials.includes(suggestedInitial)) {
+      length += 1;
+      suggestedInitial = playerName.substring(0, length);
+    }
+
+    initials.push(suggestedInitial);
+  });
+
+  return {
+    player1: initials[0],
+    player2: initials[1],
+    player3: initials[2],
+    player4: initials[3]
   };
 };

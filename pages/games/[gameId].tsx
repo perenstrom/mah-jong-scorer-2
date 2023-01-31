@@ -7,6 +7,7 @@ import { InputRow } from 'components/gameDetails/InputRow';
 import { LeaderBoardItem } from 'components/gameDetails/LeaderBoardItem';
 import { SaveButton } from 'components/gameDetails/SaveButton';
 import { calculateStandings } from 'helpers/gameHelper';
+import { generatePlayerInitials } from 'helpers/playerHelper';
 import { calculateResults } from 'helpers/transactionHelper';
 import { prismaContext } from 'lib/prisma';
 import { GetServerSideProps, NextPage } from 'next';
@@ -43,8 +44,13 @@ const ChangeCell: React.FC<{ transactionResult: TransactionResult }> = ({
 interface Props {
   game: ExpandedGame;
   transactions: Transaction[];
+  playerInitials: Record<`player${PlayerNumber}`, string>;
 }
-const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
+const GameDetailsPage: NextPage<Props> = ({
+  game,
+  transactions,
+  playerInitials
+}) => {
   const leaderboard = [
     { player: game.players.player1, result: game.results.player1 || 0 },
     { player: game.players.player2, result: game.results.player2 || 0 },
@@ -73,9 +79,7 @@ const GameDetailsPage: NextPage<Props> = ({ game, transactions }) => {
   };
   const generateInputRow = (playerNumber: PlayerNumber) => (
     <InputRow
-      initials={
-        game.players[`player${playerNumber}`].user?.name.substring(0, 1) || ''
-      }
+      initials={playerInitials[`player${playerNumber}`]}
       color={colors[playerNumber]}
       value={scoreInput[`player${playerNumber}`]}
       onValueChange={updateScoreInput(playerNumber)}
@@ -204,12 +208,23 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (
     throw new Error('Error when fetching games data');
   }
 
+  const playerInitials = generatePlayerInitials({
+    player1: game.players.player1.user?.name || '',
+    player2: game.players.player2.user?.name || '',
+    player3: game.players.player3.user?.name || '',
+    player4: game.players.player4.user?.name || ''
+  });
+
   if (!game.meta.finished) {
     game.results = calculateStandings(transactions);
   }
 
   return {
-    props: { game, transactions: calculateResults(transactions) }
+    props: {
+      game,
+      transactions: calculateResults(transactions),
+      playerInitials
+    }
   };
 };
 
