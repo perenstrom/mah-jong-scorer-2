@@ -61,12 +61,13 @@ const GameDetailsPage: NextPage<Props> = ({
     { player: game.players.player4, result: results.player4 || 0 }
   ].sort((a, b) => (b.result || 0) - (a.result || 0));
 
-  const [scoreInput, setScoreInput] = useState({
+  const defaultScores = {
     player1: '0',
     player2: '0',
     player3: '0',
     player4: '0'
-  });
+  };
+  const [scoreInput, setScoreInput] = useState(defaultScores);
   const updateScoreInput = (playerNumber: PlayerNumber) => (value: string) => {
     setScoreInput({ ...scoreInput, [`player${playerNumber}`]: value });
   };
@@ -93,6 +94,16 @@ const GameDetailsPage: NextPage<Props> = ({
     />
   );
 
+  const resetInput = () => {
+    setScoreInput(defaultScores);
+
+    if (windPlayer !== winnerPlayer) {
+      setWindPlayer((prev) => (prev + 1 > 4 ? 1 : prev + 1) as PlayerNumber);
+    }
+
+    setWinnerPlayer(null);
+  };
+
   const latestRound = [...transactions].sort((a, b) => b.round - a.round)[0]
     .round;
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
@@ -115,6 +126,7 @@ const GameDetailsPage: NextPage<Props> = ({
     const newTransactions = calculateResults([...transactions, newTransaction]);
     setTransactions(newTransactions);
     setResults(calculateStandings(newTransactions));
+    resetInput();
   };
 
   return (
