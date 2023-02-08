@@ -2,6 +2,8 @@ import {
   withPageAuthRequired,
   WithPageAuthRequiredProps
 } from '@auth0/nextjs-auth0';
+import { faCrown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Stack, styled } from '@mui/joy';
 import { InputRow } from 'components/gameDetails/InputRow';
 import { LeaderBoardItem } from 'components/gameDetails/LeaderBoardItem';
@@ -29,15 +31,30 @@ const TableBodyRow = styled('tr')`
   }
 `;
 
-const ChangeCell: React.FC<{ transactionResult: TransactionResult }> = ({
-  transactionResult
-}) => {
+const ChangeText = styled('span')<{ changeType: 'neg' | 'nil' | 'pos' }>`
+  font-weight: bold;
+  color: ${({ changeType }) =>
+    changeType === 'neg'
+      ? '#b90e0a'
+      : changeType === 'pos'
+      ? '#03ac13'
+      : 'black'};
+`;
+
+const ChangeCell: React.FC<{
+  transactionResult: TransactionResult;
+  winner: boolean;
+}> = ({ transactionResult, winner }) => {
   const { result, points, change } = transactionResult;
-  const text = `${result} (${points} ➔ ${change})`;
+  const changeType = change > 0 ? 'pos' : change < 0 ? 'neg' : 'nil';
 
   return (
     <Box component="td" p={1}>
-      {text}
+      <span>
+        {result} ({points} ➔{' '}
+        <ChangeText changeType={changeType}>{change}</ChangeText>){' '}
+        {winner && <FontAwesomeIcon color="#F6AE2D" icon={faCrown} />}
+      </span>
     </Box>
   );
 };
@@ -219,10 +236,22 @@ const GameDetailsPage: NextPage<Props> = ({
                 <Box component="td" p={1}>
                   {transaction.round}
                 </Box>
-                <ChangeCell transactionResult={transaction.result.player1} />
-                <ChangeCell transactionResult={transaction.result.player2} />
-                <ChangeCell transactionResult={transaction.result.player3} />
-                <ChangeCell transactionResult={transaction.result.player4} />
+                <ChangeCell
+                  transactionResult={transaction.result.player1}
+                  winner={transaction.mahJongPlayer === 1}
+                />
+                <ChangeCell
+                  transactionResult={transaction.result.player2}
+                  winner={transaction.mahJongPlayer === 2}
+                />
+                <ChangeCell
+                  transactionResult={transaction.result.player3}
+                  winner={transaction.mahJongPlayer === 3}
+                />
+                <ChangeCell
+                  transactionResult={transaction.result.player4}
+                  winner={transaction.mahJongPlayer === 4}
+                />
               </TableBodyRow>
             ))}
           </tbody>
