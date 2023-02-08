@@ -90,6 +90,11 @@ const GameDetailsPage: NextPage<Props> = ({
     />
   );
 
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    console.log('submit');
+  };
+
   return (
     <>
       <Stack direction="row" sx={{ height: '15rem' }}>
@@ -121,13 +126,17 @@ const GameDetailsPage: NextPage<Props> = ({
         >
           Graph under construction
         </Box>
-        <Stack sx={{ flexBasis: '20rem', minWidth: '0' }} component="form">
+        <Stack
+          sx={{ flexBasis: '20rem', minWidth: '0' }}
+          component="form"
+          onSubmit={onSubmit}
+        >
           {generateInputRow(1)}
           {generateInputRow(2)}
           {generateInputRow(3)}
           {generateInputRow(4)}
           <Box sx={{ flex: '1' }}>
-            <SaveButton>Save</SaveButton>
+            <SaveButton type="submit">Save</SaveButton>
           </Box>
         </Stack>
       </Stack>

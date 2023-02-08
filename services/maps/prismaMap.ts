@@ -6,7 +6,7 @@ import type {
 } from '@prisma/client';
 import type { ExpandedGame as PrismaExpandedGame } from 'services/prisma/prisma.types';
 import { formatExpandedPlayer, formatPlayer } from 'helpers/playerHelper';
-import type { CreateGamePrisma } from 'schemas/zodSchemas';
+import type { CreateGamePrisma, CreateTransaction } from 'schemas/zodSchemas';
 import type { ExpandedGame, Game, Transaction, User } from 'types/types';
 import type { Nullable } from 'types/utilityTypes';
 import {
@@ -116,6 +116,22 @@ export const prismaMap = {
       result: calculateTransaction(
         PrismaTransactionToTransactionData(transactionResponse)
       )
+    }),
+    toPrisma: (
+      transaction: CreateTransaction
+    ): Prisma.TransactionCreateInput => ({
+      round: transaction.round,
+      pointsPlayer1: transaction.result.player1,
+      pointsPlayer2: transaction.result.player2,
+      pointsPlayer3: transaction.result.player3,
+      pointsPlayer4: transaction.result.player4,
+      windPlayer: transaction.windPlayer,
+      mahJongPlayer: transaction.mahJongPlayer,
+      game: {
+        connect: {
+          id: transaction.gameId
+        }
+      }
     })
   }
 };

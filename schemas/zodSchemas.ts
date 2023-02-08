@@ -22,3 +22,19 @@ export type CreateGame = z.infer<typeof createGamePostSchema>;
 export type CreateGamePrisma = z.infer<typeof createGamePostSchema> & {
   id: string;
 };
+
+export const createTransactionPostSchema = z.object({
+  round: z.number(),
+  result: z.object({
+    player1: z.number(),
+    player2: z.number(),
+    player3: z.number(),
+    player4: z.number()
+  }),
+  windPlayer: z.number().min(1).max(4).int(),
+  mahJongPlayer: z.number().min(1).max(4).int()
+});
+
+export type CreateTransaction = z.infer<typeof createTransactionPostSchema> & {
+  gameId: string;
+};
