@@ -13,6 +13,7 @@ import { prismaContext } from 'lib/prisma';
 import { GetServerSideProps, NextPage } from 'next';
 import { ParsedUrlQuery } from 'querystring';
 import React, { useState } from 'react';
+import { createTransaction } from 'services/local/transactions';
 import { getExpandedGame } from 'services/prisma/games';
 import { getTransactions } from 'services/prisma/transactions';
 import {
@@ -23,7 +24,7 @@ import {
 } from 'types/types';
 
 const TableBodyRow = styled('tr')`
-  &:nth-child(odd) {
+  &:nth-of-type(odd) {
     background-color: #f1f6ff;
   }
 `;
@@ -48,14 +49,16 @@ interface Props {
 }
 const GameDetailsPage: NextPage<Props> = ({
   game,
-  transactions,
+  transactions: initialTransactions,
   playerInitials
 }) => {
+  const [transactions, setTransactions] = useState(initialTransactions);
+  const [results, setResults] = useState(game.results);
   const leaderboard = [
-    { player: game.players.player1, result: game.results.player1 || 0 },
-    { player: game.players.player2, result: game.results.player2 || 0 },
-    { player: game.players.player3, result: game.results.player3 || 0 },
-    { player: game.players.player4, result: game.results.player4 || 0 }
+    { player: game.players.player1, result: results.player1 || 0 },
+    { player: game.players.player2, result: results.player2 || 0 },
+    { player: game.players.player3, result: results.player3 || 0 },
+    { player: game.players.player4, result: results.player4 || 0 }
   ].sort((a, b) => (b.result || 0) - (a.result || 0));
 
   const [scoreInput, setScoreInput] = useState({
@@ -90,9 +93,28 @@ const GameDetailsPage: NextPage<Props> = ({
     />
   );
 
-  const onSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+  const latestRound = [...transactions].sort((a, b) => b.round - a.round)[0]
+    .round;
+  const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-    console.log('submit');
+    if (!winnerPlayer) return;
+
+    const newTransaction = await createTransaction({
+      gameId: game.id,
+      round: latestRound + 1,
+      result: {
+        player1: parseInt(scoreInput.player1, 10),
+        player2: parseInt(scoreInput.player2, 10),
+        player3: parseInt(scoreInput.player3, 10),
+        player4: parseInt(scoreInput.player4, 10)
+      },
+      mahJongPlayer: winnerPlayer,
+      windPlayer: windPlayer
+    });
+
+    const newTransactions = calculateResults([...transactions, newTransaction]);
+    setTransactions(newTransactions);
+    setResults(calculateStandings(newTransactions));
   };
 
   return (
