@@ -177,16 +177,31 @@ const GameDetailsPage: NextPage<Props> = ({
             justifyContent: 'center'
           }}
         >
-          <ResultChart
-            transactions={transactions}
-            players={game.players}
-            colors={{
-              1: colors[1].background,
-              2: colors[2].background,
-              3: colors[3].background,
-              4: colors[4].background
-            }}
-          />
+          {transactions.length > 0 ? (
+            <ResultChart
+              transactions={transactions}
+              players={game.players}
+              colors={{
+                1: colors[1].background,
+                2: colors[2].background,
+                3: colors[3].background,
+                4: colors[4].background
+              }}
+            />
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid hsl(0, 0%, 80%)',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              Game not started, chart not generated
+            </Box>
+          )}
         </Box>
         <Stack
           sx={{ flexBasis: '20rem', minWidth: '0' }}
