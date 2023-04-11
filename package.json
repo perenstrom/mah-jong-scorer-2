@@ -26,8 +26,10 @@
     "@mui/base": "^5.0.0-alpha.113",
     "@mui/joy": "^5.0.0-alpha.49",
     "@prisma/client": "^4.3.1",
+    "chart.js": "^4.2.1",
     "next": "^12.3.0",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "zod": "^3.19.1"
   },
