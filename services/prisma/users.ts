@@ -20,3 +20,32 @@ export const createUser = async (
     return null;
   }
 };
+
+export const getUsers = async (ctx: Context) => {
+  const usersResult = await ctx.prisma.user.findMany({});
+
+  if (!usersResult) {
+    return null;
+  } else {
+    return usersResult.map((userResult) =>
+      prismaMap.user.fromPrisma(userResult)
+    );
+  }
+};
+
+export const getUser = async (
+  userId: string,
+  ctx: Context
+): Promise<Nullable<User>> => {
+  const userResult = await ctx.prisma.user.findUnique({
+    where: {
+      id: userId
+    }
+  });
+
+  if (!userResult) {
+    return null;
+  } else {
+    return prismaMap.user.fromPrisma(userResult);
+  }
+};

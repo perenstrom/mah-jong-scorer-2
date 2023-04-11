@@ -1,12 +1,11 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import CssBaseline from '@mui/joy/CssBaseline';
+import { CssVarsProvider } from '@mui/joy';
 import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import { UserProvider } from '@auth0/nextjs-auth0';
-
-import { theme } from 'styles/theme';
 
 import type { AppProps } from 'next/dist/shared/lib/router/router';
 
@@ -28,10 +27,10 @@ function MyApp({
         />
       </Head>
       <UserProvider>
-        <ThemeProvider theme={theme}>
+        <CssVarsProvider>
           <CssBaseline />
           <Component {...pageProps} key={router.asPath} />
-        </ThemeProvider>
+        </CssVarsProvider>
       </UserProvider>
     </CacheProvider>
   );

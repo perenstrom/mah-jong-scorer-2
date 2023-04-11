@@ -1,32 +1,61 @@
-import React from 'react';
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
+import {
+  withPageAuthRequired,
+  WithPageAuthRequiredProps
+} from '@auth0/nextjs-auth0';
+import { ExpandedGame, User } from 'types/types';
+import { getUsers } from 'services/prisma/users';
+import { prismaContext } from 'lib/prisma';
+import { Container } from '@mui/system';
+import { getExpandedGames } from 'services/prisma/games';
+import { CreateGameForm } from 'components/CreateGameForm';
+import Sheet from '@mui/joy/Sheet';
+import { Stack } from '@mui/joy';
+import { GamesList } from 'components/GamesList';
 import Head from 'next/head';
-import { Container, Box, Paper, Typography } from '@mui/material';
 
-const IndexPage: NextPage<{}> = ({}) => {
+interface Props {
+  users: User[];
+  games: ExpandedGame[];
+}
+
+const IndexPage: NextPage<Props> = ({ users, games }) => {
   return (
-    <Container maxWidth="md">
+    <>
       <Head>
-        <title>NextJS Typescript Starter</title>
+        <title>Mah Jong Scorer</title>
       </Head>
-      <Box mt={6}>
-        <Paper>
-          <Box p={2}>
-            <Typography variant={'h1'}>
-              Opinionated NextJS Typescript starter
-            </Typography>
-            <Typography variant={'subtitle1'}>With Material-UI</Typography>
-            <p>
-              This is my preferred starter template for building NextJS apps in
-              Typescript. This version also includes{' '}
-              <a href="https://mui.com/">MUI</a> (formerly known as Material UI)
-              for quicker prototyping.
-            </p>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+      <Container maxWidth="md" sx={{ p: 2 }}>
+        <Stack spacing={2}>
+          <Sheet variant="outlined" sx={{ p: 2 }}>
+            <CreateGameForm users={users} />
+          </Sheet>
+          <Sheet variant="outlined" sx={{ p: 2 }}>
+            <GamesList games={games} />
+          </Sheet>
+        </Stack>
+      </Container>
+    </>
   );
 };
 
-export default IndexPage;
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const users = await getUsers(prismaContext);
+  const games = await getExpandedGames(prismaContext);
+
+  if (!users) {
+    throw new Error('Error when fetching user data');
+  }
+
+  if (!games) {
+    throw new Error('Error when fetching games data');
+  }
+
+  return {
+    props: { users, games }
+  };
+};
+
+export default withPageAuthRequired<Props & WithPageAuthRequiredProps>(
+  IndexPage
+);
