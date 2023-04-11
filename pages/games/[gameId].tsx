@@ -121,8 +121,10 @@ const GameDetailsPage: NextPage<Props> = ({
     setWinnerPlayer(null);
   };
 
-  const latestRound = [...transactions].sort((a, b) => b.round - a.round)[0]
-    .round;
+  const latestRound =
+    transactions.length > 0
+      ? [...transactions].sort((a, b) => b.round - a.round)[0].round
+      : 0;
   const onSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     if (!winnerPlayer) return;
