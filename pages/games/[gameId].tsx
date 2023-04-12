@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Stack, styled } from '@mui/joy';
 import { InputRow } from 'components/gameDetails/InputRow';
 import { LeaderBoardItem } from 'components/gameDetails/LeaderBoardItem';
+import { ResultChart } from 'components/gameDetails/ResultChart';
 import { SaveButton } from 'components/gameDetails/SaveButton';
 import { calculateStandings } from 'helpers/gameHelper';
 import { generatePlayerInitials } from 'helpers/playerHelper';
@@ -170,14 +171,37 @@ const GameDetailsPage: NextPage<Props> = ({
         </Stack>
         <Box
           sx={{
-            backgroundColor: '#eee',
             flexGrow: '1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}
         >
-          Graph under construction
+          {transactions.length > 0 ? (
+            <ResultChart
+              transactions={transactions}
+              players={game.players}
+              colors={{
+                1: colors[1].background,
+                2: colors[2].background,
+                3: colors[3].background,
+                4: colors[4].background
+              }}
+            />
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid hsl(0, 0%, 80%)',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              Game not started, chart not generated
+            </Box>
+          )}
         </Box>
         <Stack
           sx={{ flexBasis: '20rem', minWidth: '0' }}
