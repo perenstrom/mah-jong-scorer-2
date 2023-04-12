@@ -99,6 +99,12 @@ const GameDetailsPage: NextPage<Props> = ({
     3: { background: '#33658A', text: 'white' },
     4: { background: '#F6AE2D', text: 'black' }
   };
+  const playerColorMap = {
+    [game.players.player1.user?.userId || 1]: colors[1],
+    [game.players.player2.user?.userId || 2]: colors[2],
+    [game.players.player3.user?.userId || 3]: colors[3],
+    [game.players.player4.user?.userId || 4]: colors[4]
+  };
   const generateInputRow = (playerNumber: PlayerNumber) => (
     <InputRow
       initials={playerInitials[`player${playerNumber}`]}
@@ -164,6 +170,13 @@ const GameDetailsPage: NextPage<Props> = ({
                 leaderBoardItem.player.user?.name ||
                 leaderBoardItem.player.nonUser ||
                 ''
+              }
+              color={
+                playerColorMap[
+                  leaderBoardItem.player.user?.userId ||
+                    leaderBoardItem.player.nonUser ||
+                    ''
+                ].background
               }
               points={leaderBoardItem.result}
             />
