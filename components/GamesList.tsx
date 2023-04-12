@@ -50,7 +50,12 @@ export const GamesList: React.FC<Props> = ({ games }) => {
         Games
       </Typography>
       {games.map((game) => (
-        <Card row variant="outlined" key={game.id} sx={{ mb: 1 }}>
+        <Card
+          orientation="horizontal"
+          variant="outlined"
+          key={game.id}
+          sx={{ mb: 1 }}
+        >
           <CardContent>
             <Link href={`/games/${encodeURIComponent(game.id)}`}>
               <Typography level="h5" component="h3" mb={1}>
