@@ -5,7 +5,6 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Legend,
   ChartDataset
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
@@ -18,23 +17,13 @@ const Wrapper = styled.div`
   padding: 1rem;
 `;
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Legend);
-
-const legendOptions = {
-  position: 'top' as const,
-  labels: {
-    font: {
-      size: 14
-    },
-    color: 'black'
-  }
-};
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement);
 
 const options = {
   responsive: true,
   maintainAspectRatio: false,
-  plugins: {
-    legend: legendOptions
+  animation: {
+    duration: 0
   }
 };
 
