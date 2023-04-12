@@ -2,7 +2,7 @@ import {
   withPageAuthRequired,
   WithPageAuthRequiredProps
 } from '@auth0/nextjs-auth0';
-import { faCrown } from '@fortawesome/free-solid-svg-icons';
+import { faCrown, faWind } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Box, Stack, styled } from '@mui/joy';
 import { InputRow } from 'components/gameDetails/InputRow';
@@ -45,7 +45,8 @@ const ChangeText = styled('span')<{ changeType: 'neg' | 'nil' | 'pos' }>`
 const ChangeCell: React.FC<{
   transactionResult: TransactionResult;
   winner: boolean;
-}> = ({ transactionResult, winner }) => {
+  wind: boolean;
+}> = ({ transactionResult, winner, wind }) => {
   const { result, points, change } = transactionResult;
   const changeType = change > 0 ? 'pos' : change < 0 ? 'neg' : 'nil';
 
@@ -54,7 +55,12 @@ const ChangeCell: React.FC<{
       <span>
         {result} ({points} ➔{' '}
         <ChangeText changeType={changeType}>{change}</ChangeText>){' '}
-        {winner && <FontAwesomeIcon color="#F6AE2D" icon={faCrown} />}
+        {winner && (
+          <>
+            <FontAwesomeIcon color="#F6AE2D" icon={faCrown} />{'  '}
+          </>
+        )}
+        {wind && <FontAwesomeIcon color="hsl(223, 73%, 60%)" icon={faWind} />}
       </span>
     </Box>
   );
@@ -278,18 +284,22 @@ const GameDetailsPage: NextPage<Props> = ({
                 <ChangeCell
                   transactionResult={transaction.result.player1}
                   winner={transaction.mahJongPlayer === 1}
+                  wind={transaction.windPlayer === 1}
                 />
                 <ChangeCell
                   transactionResult={transaction.result.player2}
                   winner={transaction.mahJongPlayer === 2}
+                  wind={transaction.windPlayer === 2}
                 />
                 <ChangeCell
                   transactionResult={transaction.result.player3}
                   winner={transaction.mahJongPlayer === 3}
+                  wind={transaction.windPlayer === 3}
                 />
                 <ChangeCell
                   transactionResult={transaction.result.player4}
                   winner={transaction.mahJongPlayer === 4}
+                  wind={transaction.windPlayer === 4}
                 />
               </TableBodyRow>
             ))}
