@@ -22,6 +22,9 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement);
 const options = {
   responsive: true,
   maintainAspectRatio: false,
+  animation: {
+    duration: 0
+  }
 };
 
 const defaultOptions: Omit<

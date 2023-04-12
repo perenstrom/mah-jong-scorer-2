@@ -162,7 +162,7 @@ const GameDetailsPage: NextPage<Props> = ({
           {leaderboard.map((leaderBoardItem) => (
             <LeaderBoardItem
               key={
-                leaderBoardItem.player.user?.name ||
+                leaderBoardItem.player.user?.userId ||
                 leaderBoardItem.player.nonUser ||
                 ''
               }
