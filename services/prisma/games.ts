@@ -10,11 +10,12 @@ export const createGame = async (
   ctx: Context
 ): Promise<Nullable<Game>> => {
   const formattedGame = prismaMap.game.toPrisma(game);
-  console.log(JSON.stringify(formattedGame, null, 2));
 
+  const ping = performance.now();
   const result = await ctx.prisma.game.create({
     data: formattedGame
   });
+  console.log(`Create game prisma: ${performance.now() - ping}ms`);
 
   if (result) {
     return prismaMap.game.fromPrisma(result);
@@ -26,6 +27,7 @@ export const createGame = async (
 export const getExpandedGames = async (
   ctx: Context
 ): Promise<ExpandedGame[]> => {
+  const ping = performance.now();
   const result = await ctx.prisma.game.findMany({
     include: {
       player1User: true,
@@ -34,6 +36,7 @@ export const getExpandedGames = async (
       player4User: true
     }
   });
+  console.log(`Get expanded games prisma: ${performance.now() - ping}ms`);
 
   if (result.length > 0) {
     return result.map((game) => prismaMap.expandedGame.fromPrisma(game));
@@ -46,6 +49,7 @@ export const getExpandedGame = async (
   ctx: Context,
   gameId: string
 ): Promise<Nullable<ExpandedGame>> => {
+  const ping = performance.now();
   const result = await ctx.prisma.game.findUnique({
     where: {
       id: gameId
@@ -57,6 +61,7 @@ export const getExpandedGame = async (
       player4User: true
     }
   });
+  console.log(`Get expanded game prisma: ${performance.now() - ping}ms`);
 
   if (result) {
     return prismaMap.expandedGame.fromPrisma(result);

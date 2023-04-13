@@ -10,9 +10,11 @@ export const createUser = async (
 ): Promise<Nullable<User>> => {
   const formattedUser = prismaMap.user.toPrisma(user);
 
+  const ping = performance.now();
   const result = await ctx.prisma.user.create({
     data: formattedUser
   });
+  console.log(`Create user prisma: ${performance.now() - ping}ms`);
 
   if (result) {
     return prismaMap.user.fromPrisma(result);
@@ -22,7 +24,9 @@ export const createUser = async (
 };
 
 export const getUsers = async (ctx: Context) => {
+  const ping = performance.now();
   const usersResult = await ctx.prisma.user.findMany({});
+  console.log(`Get users prisma: ${performance.now() - ping}ms`);
 
   if (!usersResult) {
     return null;
@@ -37,11 +41,13 @@ export const getUser = async (
   userId: string,
   ctx: Context
 ): Promise<Nullable<User>> => {
+  const ping = performance.now();
   const userResult = await ctx.prisma.user.findUnique({
     where: {
       id: userId
     }
   });
+  console.log(`Get user prisma: ${performance.now() - ping}ms`);
 
   if (!userResult) {
     return null;
